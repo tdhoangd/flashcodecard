@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+	<title>FCC Main</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css"
+	/>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
+	<!-- <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.12.0/build/styles/default.min.css"> -->
+
+</head>
+
+<body>
+
+	<nav class="nav navbar-inverse navbar-fixed-top">
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="/">
+					<strong>FCC</strong>
+				</a>
+			</div>
+
+			<div class="collapse navbar-collapse">
+				<ul class="nav navbar-nav navbar-right">
+					<li>
+						<a href="/main">Main</a>
+					</li>
+					<li>
+						<a href="/logout">
+							<span class="glyphicon glyphicon-log-out"> Logout</span>
+						</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+
+	<nav class="navbar navbar-default">
+		<div class="container">
+			<div class="navbar-left">
+				<button id="id-list-set" type="button" class="btn navbar-btn hover glyphicon glyphicon-refresh"> MY SETS </button>
+			</div>
+			<div class="navbar-center">
+				<p class="navbar-text glyphicon glyphicon-chevron-right"> Selected Set:
+					<span id="idSelectedSet" data="">default</span>
+				</p>
+			</div>
+			<div class="navbar-right">
+				<p class="navbar-text glyphicon glyphicon-option-vertical"></p>
+				<button id="id-btn-quiz" type="button" class="btn navbar-btn hover">Quiz</button>
+				<button id="id-btn-view" type="button" class="btn navbar-btn hover">View</button>
+				<div class="btn-group">
+					<button type="button" class="btn dropdown-toggle hover" data-toggle="dropdown">
+						Create
+						<span class="caret"></span>
+					</button>
+					<ul class="dropdown-menu" role="menu">
+						<li>
+							<a id="id-tab-create-set" href="#">New Set</a>
+						</li>
+						<li class="divider"></li>
+						<li>
+							<a id="id-tab-create-flashcard" href="#">New Flashcard</a>
+						</li>
+					</ul>
+
+				</div>
+
+			</div>
+		</div>
+	</nav>
+
+	<div id="idDivContainerList" class="container hidden">
+		<div class="col-sm-4">
+			<div class="panel panel-default">
+				<div class="panel-heading medium-text">My sets</div>
+				<div class="panel-body">
+					<ul id="idBodyList" class="nav">
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<div id="div-create-set" class="hidden box-create-new">
+		<hr>
+		<div class="container ">
+			<div class='panel panel-default'>
+				<div class='panel-heading'>
+
+					<div class="container">
+						<div class="row">
+							<div class="col-xs-10 medium-text">Create a New Set</div>
+							<div class="red-text col-xs-2 medium-text" class="text-right" id="cancel-create-set">
+								<strong>
+									<span class="glyphicon glyphicon-remove-sign"></span>
+								</strong>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class='panel-body'>
+					<div class="form-group">
+						<p>Set Title:</p>
+						<input type="text" class="form-control" id="new-set-title">
+					</div>
+					<div class="form-group">
+						<p>Discription:</p>
+						<textarea id="new-set-discription" class="form-control"></textarea>
+					</div>
+				</div>
+				<div class='panel-footer'>
+					<input id="btn-new-set" class="btn btn-primary btn-block" type="button" value="submit">
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="div-create-flashcard" class="" >
+		<hr>
+		<div class="container ">
+			<div class='panel panel-default'>
+				<div class='panel-heading'>
+
+					<div class="container">
+						<div class="row">
+							<div class="col-xs-10 medium-text">Create a New Flashcard</div>
+							<div class="red-text col-xs-2 medium-text" class="text-right" id="cancel-create-flashcard">
+								<strong>
+									<span class="glyphicon glyphicon-remove-sign"></span>
+								</strong>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class='panel-body'>
+
+					<div class="btn-toolbar" role="toolbar">
+						<div class="btn-group" role="group">
+							<button type="button" class="btn btn-default" aria-label="...">
+								<span class="glyphicon glyphicon-bold"></span>
+							</button>
+							<button type="button" class="btn btn-default" aria-label="...">
+								<span class="glyphicon glyphicon-italic"></span>
+							</button>
+							<!-- <div class="btn-group" role="group" aria-label="...">...</div> -->
+						</div>
+					</div>
+
+					<hr>
+					<!-- <div class='panel panel-default'>
+							<div class='panel-heading'> -->
+					
+					<div class="panel panel-default">
+						<div class="panel-heading">Front Card:</div>
+						<div class="panel-body">
+							<div id="idFrontCardEditBox" class="editbox" contenteditable="true"></div>
+						</div>
+					</div>
+					<div class="panel panel-default">
+						<div class="panel-heading">Back Card:</div>
+						<div class="panel-body">
+							<div id="idBackCardEditBox" class="editbox" contenteditable="true">back card</div>
+						</div>
+					</div>
+
+				</div>
+				<div class='panel-footer'>
+					<input id="btn-new-set" class="btn btn-primary btn-block" type="button" value="submit">
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- <div class="container">	
+	<div class="sets hover third col-sm-3" > temp div</div>
+	<div class="hover first col-sm-9" >first section</div>	
+	<div class="hover second" >second section</div>
+	<div class="hover fourth" >fourth section </div>			
+	</div> -->
+
+
+
+
+
+
+
+	<!-- <div id="toast">
+		this is a toast test
+	</div>
+	<input id="btn-test" class="btn btn-primary" type="button" value="test-time"> -->
+
+	<script id="test-time" class="hidden">
+		jQuery('#btn-test').on('click', function () {
+			var x = document.getElementById("toast");
+			x.className = "show";
+			setTimeout(function () {
+				x.className = x.className.replace("show", "");
+			}, 3000);
+		});
+	</script>
+
+	<script type="text/javascript" src="/javascripts/newset.js"></script>
+
+</body>
+
+</html>

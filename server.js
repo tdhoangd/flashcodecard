@@ -8,6 +8,7 @@ var port 		= process.env.PORT || '8080';
 var passport 	= require('passport');
 var session 	= require('express-session');
 var sqlite	= require('sqlite3');
+var path		= require('path');
 
 var bodyParser 		= require('body-parser');
 var cookieParser 	= require('cookie-parser');
@@ -32,8 +33,15 @@ server.use(passport.initialize());
 server.use(passport.session());
 
 // ---- routes ------ //
-var routes = require('./app/routes.js');
-routes(server, passport, database);
+var renderFile = require('./app/renderFile.js');
+require('./app/routes.js')(server, passport, database, renderFile);
+require('./app/user.js')(server, passport, database, renderFile);
+
+/* UNKNOWN ROUTES */
+server.get('*', function(req, res) {
+	res.redirect('/');
+});
+
 
 /* ----------------------------------------------------- */ 
 /* -----------  Start server --------------------------- */

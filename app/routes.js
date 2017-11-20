@@ -2,36 +2,36 @@ var express = require('express');
 var router 	= express.Router();
 var path 	= require('path');
 var sqlite 	= require('sqlite3');
-var fs = require('fs');
-var mustache = require('mustache');
+var bcrypt 		= require('bcryptjs');
 
-module.exports = function(server, passport, database) {
+// route to login, logout, register, public files, 
+module.exports = function(server, passport, database, renderFile) {
 
 	// serve static public files like css, image, 
 	// and client side javacript files 
-	server.use(express.static(path.join(__dirname, 'public/')));
+	server.use(express.static(path.join(__dirname, '/../public/')));
 
 	/* HOME */
 	server.get('/', function(req, res) {
-		res.sendFile('index.html', {'root': __dirname + '/../views/'});
+		// res.sendFile('index.html', {'root': __dirname + '/../views/'});
+		renderFile(req, res, 'index.html', false, null);
 	});
 
 	/* REGISTER */
 	server.get('/register', function(req, res) {
-		sendRenderFile(req, res, 'register.html', false, null);
+		renderFile(req, res, 'register.html', false, null);
 		// res.sendFile('register.html', {'root': __dirname + '/../views/'});
 	});
 
 	/* LOGIN */
 	server.get('/login', function(req, res) {
 		// res.sendFile('login.html', {'root': __dirname + '/../views/'});
-		sendRenderFile(req, res, 'login.html', false, null);
+		if (req.isAuthenticated()) {
+			res.redirect('/main');
+		} else {
+			renderFile(req, res, 'login.html', false, null);
+		}
 	});	
-
-	/* PROFILE  */
-	server.get('/profile', isLogedIn, function(req, res) {
-		res.sendFile('profile.html', {'root': __dirname + '/../views/'});
-	});
 
 	/* LOGOUT */
 	server.get('/logout', function(req, res) {
@@ -41,7 +41,7 @@ module.exports = function(server, passport, database) {
 
 	/* POST LOGIN */ 
 	server.post('/login', passport.authenticate('local', {
-		successRedirect: '/profile',
+		successRedirect: '/main',
 		failureRedirect: '/login'
 	}));
 
@@ -63,10 +63,21 @@ module.exports = function(server, passport, database) {
 				return;
 			} 
 			
-			functionDatabaseInsert();
+			// generate hash string from user input password
+			bcrypt.hash(req.body.password, 10, function(err, hash) {
+				if (err) {
+					console.log(err);
+					functionError('Unable to register. Please try again with other username and password!');
+				} 
+
+				functionDatabaseInsert(hash);				
+			});
+
+
 		}
 
-		var functionDatabaseInsert = function() {
+		var functionDatabaseInsert = function(hash) {
+			
 			database.run(`
 				INSERT INTO users (
 					name, password
@@ -75,65 +86,62 @@ module.exports = function(server, passport, database) {
 				)
 			`, {
 				':strName': req.body.username,
-				':strPassword': req.body.password
+				':strPassword': hash
 			},function(err) {
 				if (err) {
 					console.log(err);
 					functionError('Unable to register. Please try again with other username and password!');
 					return;
-				}
-				console.log(this.lastID);
-				functionSuccess(this.lastID);
+				}		
+				var objUser = { 'id': this.lastID, 'name': req.body.username};
+				console.log('New user: ' +  objUser.toString());
+				
+				functionPreSuccess(objUser);
 			});
 			return;
 		}
 
+		var functionPreSuccess = function(objUser) {
+			database.run(`
+				INSERT INTO sets (
+					title, discription, userid
+				) VALUES (
+					:strTitle, :strDiscription, :intUserID
+				)
+			`, {
+				':strTitle': 'default',
+				':strDiscription': 'default set',
+				':intUserID': objUser.id
+			}, function(err) {
+				if (err) {
+					console.log(err);
+					throw err; 
+				}
+
+				functionSuccess(objUser);
+			});
+		}
+
 		var functionError = function(strMsg) {
-			sendRenderFile(req, res, 'register.html', true, strMsg);
+			renderFile(req, res, 'register.html', true, strMsg);
 			return;
 		}
 
-		var functionSuccess = function(id) {
-			req.login(id, function(err) {
+		var functionSuccess = function(user) {			
+			req.login(user, function(err) {
 				// send to home page on error
 				if (err) {
 					console.log(err);
-					res.sendFile('index.html', {'root': __dirname + '/../views/'});
+					// res.sendFile('index.html', {'root': __dirname + '/../views/'});
+					renderFile(req, res, 'index.html', false, null);
 				}
-				return res.redirect('/profile');
+				return res.redirect('/main');
 			});
 			return;
 		}
 		
 		functionPreprocess();
-	});
-
-	// set file normally with flag = false; 
-	// when flag = true; send html with error msg div
-	function sendRenderFile(req, res, file, flag, strMsg) {
-		fs.readFile(__dirname + '/../views/' + file, function(err, data) {
-			if (err) {
-				res.sendFile('index.html', {'root': __dirname + '/../views/'});
-			}
-			res.status(200);
-			res.set({'Content-Type': 'text/html'}); 
-
-			res.write(mustache.render(data.toString(), {
-				'flag': flag,
-				'strMsg': strMsg
-			}));
-			res.end();
-		});
-	}
-
-	// route middleware to check if user loged in
-	function isLogedIn(req, res, next) {
-		console.log(req.isAuthenticated());
-		if (req.isAuthenticated())
-			return next();
-
-		sendRenderFile(req, res, 'login.html', true, 'Please login first!');
-	}
+	}); // [ END POST REGISTER]
 
 }
 

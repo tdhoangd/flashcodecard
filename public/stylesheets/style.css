@@ -1,14 +1,93 @@
 body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-  background-color:  red;
+    /* background-color: rgba(128, 128, 128, 0.158); */
+    padding-top: 65px;
+    font-family: helvatica, Georgia, "Times New Roman", Times, serif;
 }
 
-.container {
-	background-color: blue;
+.glyphicon {
+    font-family: inherit;
 }
 
-a {
-  color: #00B7FF;
+.glyphicon:before {
+    font-family: 'Glyphicons Halflings';
 }
 
+.editbox {
+    min-height: 50px;
+    border-style: solid;
+    border-width: 2px;
+    border-color: rgba(122, 130, 238, 0.897);
+    padding: 5px 15px 5px 15px;
+}
+
+.border {
+    border: 1px solid rgba(128, 128, 128, 0.308);
+    border-radius: 10px;
+}
+
+.hidden {
+    visibility: none;
+}
+
+.small-text {
+    font-size: 12px;
+}
+
+.medium-text {
+    font-size: 20px;
+}
+
+.large-text {
+    font-size: 36px;
+}
+
+.red-text {
+    color: red;
+}
+
+
+.hover:hover {
+    background-color: plum;
+}
+
+
+/* test */
+
+[aria-label] {
+    position: relative;
+}
+
+[aria-label]:after {
+    content: attr(aria-label);
+    display: none;
+    position: absolute;
+    top: 110%;
+    left: 10px;
+    z-index: 5000;
+    pointer-events: none;
+    padding: 8px 10px;
+    line-height: 15px;
+    white-space: nowrap;
+    text-decoration: none;
+    text-indent: 0;
+    overflow: visible;
+    font-size: .9em;
+    font-weight: normal;
+    color: #fff;
+    text-shadow: 1px 0 1px #888;
+    background-color: #412917;
+    border-left: 6px solid #d37092;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+    -webkit-box-shadow: 1px 2px 6px rgba(0, 0, 0, 0.3);
+    box-shadow: 1px 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+a:focus {
+    outline: 1px dashed #E92C6C;
+}
+
+[aria-label]:hover:after,
+[aria-label]:focus:after {
+    display: block;
+}

@@ -1,44 +1,54 @@
+var strategy = require('passport-local').Strategy;
+var sqlite  = require('sqlite3');
+var bcrypt 	= require('bcryptjs');
 
-var strategy    = require('passport-local').Strategy;
-var sqlite      = require('sqlite3');
 
-module.exports = function(passport, database) {
+module.exports = function (passport, database) {
 
     passport.use(new strategy(
-        function(username, password, done) {
+        function (username, password, done) {
 
             database.all(`
-                SELECT * FROM users WHERE name = :strName and password = :strPassword
+                SELECT * FROM users WHERE name = :strName 
             `, {
-                ':strName': username,
-                ':strPassword': password
-            }, function(err, rows) {
+                    ':strName': username
+            }, function (err, rows) {
                 if (err) {
                     console.log('Fail Auth: (' + username + ', ' + password + ')');
                     return done(null, false);
-                } 
+                }
 
                 if (rows.length < 1) {
                     return done(null, false);
                 }
+
+                var objUser = {
+                    'id': rows[0].id,
+                    'name': rows[0].name
+                };
+
+                var hash = rows[0].password; 
+
+                // compare passwords
+                bcrypt.compare(password, hash).then((res) => {
+                    if (res) {
+                        return done(null, objUser);
+                    } else {
+                        return done(null, false);
+                    }
+                });
                 
-                return done(null, rows[0].id) 
-            });            
-    })); 
+                // return done(null, objUser);
+            });
+      
+    }));
 
-    passport.serializeUser(function(user, done) {
-        console.log('serializeUser: ' + user);
+    passport.serializeUser(function (user, done) {
         done(null, user);
     });
 
-    passport.deserializeUser(function(user, done) {
-        console.log('deserializeUser: ' + user);
+    passport.deserializeUser(function (user, done) {
         done(null, user);
     });
-
- 
 
 };
-
-
-
