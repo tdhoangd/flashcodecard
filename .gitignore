@@ -66,4 +66,5 @@ typings/
 
 # sqlite file
 .sqlite
+config/database.sqlite
 
