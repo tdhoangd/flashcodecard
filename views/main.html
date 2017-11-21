@@ -52,13 +52,13 @@
 			</div>
 			<div class="navbar-center">
 				<p class="navbar-text glyphicon glyphicon-chevron-right"> Selected Set:
-					<span id="idSelectedSet" data="">default</span>
+					<span id="idSelectedSet" data-id=""></span>
 				</p>
 			</div>
 			<div class="navbar-right">
 				<p class="navbar-text glyphicon glyphicon-option-vertical"></p>
-				<button id="id-btn-quiz" type="button" class="btn navbar-btn hover">Quiz</button>
-				<button id="id-btn-view" type="button" class="btn navbar-btn hover">View</button>
+				<button id="idBtnQuiz" type="button" class="btn navbar-btn hover">Quiz</button>
+				<button id="idBtnView" type="button" class="btn navbar-btn hover">View</button>
 				<div class="btn-group">
 					<button type="button" class="btn dropdown-toggle hover" data-toggle="dropdown">
 						Create
@@ -66,11 +66,11 @@
 					</button>
 					<ul class="dropdown-menu" role="menu">
 						<li>
-							<a id="id-tab-create-set" href="#">New Set</a>
+							<a id="idTabCreateSet" href="#">New Set</a>
 						</li>
 						<li class="divider"></li>
 						<li>
-							<a id="id-tab-create-flashcard" href="#">New Flashcard</a>
+							<a id="idTabCreateFlashcard" href="#">New Flashcard</a>
 						</li>
 					</ul>
 
@@ -93,7 +93,7 @@
 	</div>
 
 
-	<div id="div-create-set" class="hidden box-create-new">
+	<div id="idBoxCreateSet" class="hidden box-create-new">
 		<hr>
 		<div class="container ">
 			<div class='panel panel-default'>
@@ -113,26 +113,25 @@
 				<div class='panel-body'>
 					<div class="form-group">
 						<p>Set Title:</p>
-						<input type="text" class="form-control" id="new-set-title">
+						<input type="text" class="form-control" id="idNewSetTitle">
 					</div>
 					<div class="form-group">
 						<p>Discription:</p>
-						<textarea id="new-set-discription" class="form-control"></textarea>
+						<textarea id="idNewSetDiscription" class="form-control"></textarea>
 					</div>
 				</div>
 				<div class='panel-footer'>
-					<input id="btn-new-set" class="btn btn-primary btn-block" type="button" value="submit">
+					<input id="idSubmitNewSet" class="btn btn-primary btn-block" type="button" value="submit">
 				</div>
 			</div>
 		</div>
 	</div>
 
-	<div id="div-create-flashcard" class="" >
+	<div id="idBoxCreateFlashcard" class="hidden">
 		<hr>
 		<div class="container ">
 			<div class='panel panel-default'>
 				<div class='panel-heading'>
-
 					<div class="container">
 						<div class="row">
 							<div class="col-xs-10 medium-text">Create a New Flashcard</div>
@@ -145,50 +144,73 @@
 					</div>
 				</div>
 				<div class='panel-body'>
-
+					<!-- toolbar -->
 					<div class="btn-toolbar" role="toolbar">
-						<div class="btn-group" role="group">
-							<button type="button" class="btn btn-default" aria-label="...">
+						<div id="idToolbar" class="btn-group" role="group">
+							<button id="idBtnBold" type="button" class="btn btn-default" value="bold" aria-label="...">
 								<span class="glyphicon glyphicon-bold"></span>
 							</button>
-							<button type="button" class="btn btn-default" aria-label="...">
+							<button id="idBtnItalic" type="button" class="btn btn-default" value="italic">
 								<span class="glyphicon glyphicon-italic"></span>
 							</button>
-							<!-- <div class="btn-group" role="group" aria-label="...">...</div> -->
+							<button id="idBtnUnderline" type="button" class="btn btn-default" value="underline">
+								<span>
+									<strong>U</strong>
+								</span>
+							</button>
 						</div>
+
+						<!-- <div class="btn-group" role="group" aria-label="...">...</div> -->
 					</div>
 
 					<hr>
-					<!-- <div class='panel panel-default'>
-							<div class='panel-heading'> -->
-					
-					<div class="panel panel-default">
-						<div class="panel-heading">Front Card:</div>
-						<div class="panel-body">
-							<div id="idFrontCardEditBox" class="editbox" contenteditable="true"></div>
+
+					<div class="row">
+						<!-- front card -->
+						<div class="col-md-6">
+							<div class=" panel panel-default">
+								<div class="panel-heading">
+									<div class="row">
+										<div class="col-xs-10">Front Card:</div>
+										<button id="idInsertCodeFront" type="button" class="btn btn-default text-right" value="code">
+											<span class="glyphicon glyphicon-console"></span>
+										</button>
+									</div>
+								</div>
+								<div class="panel-body">
+									<div id="idEditBoxFrontCard" class="editbox" contenteditable="true"></div>
+								</div>
+							</div>
 						</div>
-					</div>
-					<div class="panel panel-default">
-						<div class="panel-heading">Back Card:</div>
-						<div class="panel-body">
-							<div id="idBackCardEditBox" class="editbox" contenteditable="true">back card</div>
+
+						<!-- back card -->
+						<div class="col-md-6">
+							<div class="panel panel-default">
+								<div class="panel-heading">
+									<div class="row">
+										<div class="col-xs-10">Back Card:</div>
+										<button id="idInsertCodeBack" type="button" class="btn btn-default text-right" value="code">
+											<span class="glyphicon glyphicon-console"></span>
+										</button>
+									</div>
+								</div>
+
+								<div class="panel-body">
+									<div id="idEditBoxBackCard" class="editbox" contenteditable="true"></div>
+								</div>
+							</div>
 						</div>
 					</div>
 
 				</div>
 				<div class='panel-footer'>
-					<input id="btn-new-set" class="btn btn-primary btn-block" type="button" value="submit">
+					<input id="idSubmitNewFlashcard" class="btn btn-primary btn-block" type="button" value="submit">
+					<div id="result"></div>
 				</div>
+
 			</div>
 		</div>
 	</div>
-
-	<!-- <div class="container">	
-	<div class="sets hover third col-sm-3" > temp div</div>
-	<div class="hover first col-sm-9" >first section</div>	
-	<div class="hover second" >second section</div>
-	<div class="hover fourth" >fourth section </div>			
-	</div> -->
 
 
 
@@ -201,7 +223,7 @@
 	</div>
 	<input id="btn-test" class="btn btn-primary" type="button" value="test-time"> -->
 
-	<script id="test-time" class="hidden">
+	<!-- <script id="test-time" class="hidden">
 		jQuery('#btn-test').on('click', function () {
 			var x = document.getElementById("toast");
 			x.className = "show";
@@ -209,9 +231,10 @@
 				x.className = x.className.replace("show", "");
 			}, 3000);
 		});
-	</script>
+	</script> -->
 
-	<script type="text/javascript" src="/javascripts/newset.js"></script>
+	<script type="text/javascript" src="/javascripts/main.js"></script>
+	<script type="text/javascript" src="/javascripts/editor.js"></script>
 
 </body>
 

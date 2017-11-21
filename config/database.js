@@ -20,7 +20,8 @@ module.exports = function(database) {
 				id integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 				title TEXT NOT NULL,
 				discription TEXT,
-				userid, 
+				userid,
+				UNIQUE(title),
 				FOREIGN KEY(userid) REFERENCES users(id)
 			)
 		`);

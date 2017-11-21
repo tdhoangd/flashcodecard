@@ -45,8 +45,11 @@ body {
     color: red;
 }
 
-
 .hover:hover {
+    background-color: plum;
+}
+
+.btn-clicked {
     background-color: plum;
 }
 
