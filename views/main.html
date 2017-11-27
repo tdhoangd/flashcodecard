@@ -81,16 +81,86 @@
 	</nav>
 
 	<div id="idDivContainerList" class="container hidden">
-		<div class="col-sm-4">
-			<div class="panel panel-default">
-				<div class="panel-heading medium-text">My sets</div>
-				<div class="panel-body">
-					<ul id="idBodyList" class="nav">
-					</ul>
+		<div class="row">
+			<div class="col-sm-4">
+				<div class="panel panel-default">
+					<div class="panel-heading medium-text">My sets</div>
+					<div class="panel-body">
+						<ul id="idListSet" class="nav">
+						</ul>
+					</div>
 				</div>
+			</div>
+			<!-- <div class="col-sm-8">
+				
+			</div> -->
+		</div>
+	</div>
+
+	<!-- display flashcards  -->
+	<div id="idDivDisplayFlashcards" class="container hidden">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<table style="width: 100%; border: 1px; padding: 5px; margin: 0;">
+					<thead>
+						<tr>
+							<td align="left">
+								<span class="pull-left">MY CARDS</span>
+							</td>
+							<td align="right">
+								<div id="idEditGroup" class=" pull-right" role="group">
+									<button style="float: left;" type="button" class="btn btn-default" data="editable">Edit</button>
+									<button style="float: right;" type="button" class="btn btn-default" data="done">Done</button>
+								</div>
+							</td>
+						</tr>
+					</thead>
+				</table>
+			</div>
+			<div id="idBodyListFlashcards" class="panel-body">
+				<!-- cards go here -->
 			</div>
 		</div>
 	</div>
+
+	<!-- test -->
+	<!-- <table border="1" class="hidden">
+		<thead>
+			<tr>
+				<th>#</th>
+				<th>btn</th>
+			</tr>
+		</thead>
+		<tbody id="bodyTable">
+			<tr>
+				<td>1</td>
+				<td>
+					<button type="button" class="" data-id="btn1">
+						edit me
+					</button>
+				</td>
+			</tr>
+			<tr>
+				<td>2</td>
+				<td>
+					<button type="button" class="" data-id="btn2">
+						edit me
+					</button>
+				</td>
+			</tr>
+			<tr>
+				<td>3</td>
+				<td>
+					<button type="button" class="" data-id="btn3">
+						edit me
+					</button>
+				</td>
+			</tr>
+		</tbody>
+	</table> -->
+
+	<!-- end test -->
+
 
 
 	<div id="idBoxCreateSet" class="hidden box-create-new">
@@ -98,7 +168,6 @@
 		<div class="container ">
 			<div class='panel panel-default'>
 				<div class='panel-heading'>
-
 					<div class="container">
 						<div class="row">
 							<div class="col-xs-10 medium-text">Create a New Set</div>
@@ -205,7 +274,6 @@
 				</div>
 				<div class='panel-footer'>
 					<input id="idSubmitNewFlashcard" class="btn btn-primary btn-block" type="button" value="submit">
-					<div id="result"></div>
 				</div>
 
 			</div>
@@ -213,25 +281,6 @@
 	</div>
 
 
-
-
-
-
-
-	<!-- <div id="toast">
-		this is a toast test
-	</div>
-	<input id="btn-test" class="btn btn-primary" type="button" value="test-time"> -->
-
-	<!-- <script id="test-time" class="hidden">
-		jQuery('#btn-test').on('click', function () {
-			var x = document.getElementById("toast");
-			x.className = "show";
-			setTimeout(function () {
-				x.className = x.className.replace("show", "");
-			}, 3000);
-		});
-	</script> -->
 
 	<script type="text/javascript" src="/javascripts/main.js"></script>
 	<script type="text/javascript" src="/javascripts/editor.js"></script>

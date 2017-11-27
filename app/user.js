@@ -5,7 +5,6 @@ module.exports = function(server, passport, database, renderFile) {
 
     // route middleware to check if user loged in
 	function isLoggedIn(req, res, next) {
-		console.log(req.isAuthenticated());
 		if (req.isAuthenticated())
 			return next();
 
@@ -14,7 +13,6 @@ module.exports = function(server, passport, database, renderFile) {
 	
     /* MAIN PAGE */ 
 	server.get('/main', isLoggedIn, function(req, res) {
-		console.log(req.user);
 		res.sendFile('main.html', {'root': __dirname + '/../views/'});
 	}); // [ END /main ]
 
@@ -24,14 +22,10 @@ module.exports = function(server, passport, database, renderFile) {
 	
 		var functionPreProcess = function() {
 			if (!req.body.title) {
-				console.log('wrong');
+				functionError(req, res, 'Error: missing set title');
+				return;
 			} 
-			console.log('---received---');
-			console.log(req.body);
-			console.log(req.body.title);
-			console.log(req.body.discription);
-			console.log(req.user.name);
-			
+
 			functionUpdateSetTable();
 		}
 
@@ -51,13 +45,12 @@ module.exports = function(server, passport, database, renderFile) {
 				':strUsername': req.user.name
 			}, function(err) {
 				if (err) {
-					console.log('--- Error when insert new set');
 					console.log(err);
 					functionError(req, res, '');
 					return;
 				}
 				
-				functionSendList(req, res);
+				functionSendListSet(req, res);
 				return;
 			});	
 		}
@@ -68,7 +61,7 @@ module.exports = function(server, passport, database, renderFile) {
 
 	/* GET LIST SETS */
 	server.get('/list', isLoggedIn, function(req, res) {
-		functionSendList(req, res);
+		functionSendListSet(req, res);
 	}) // [ END /list]
 
 	/* CREATE NEW FLASH CARD */
@@ -76,12 +69,12 @@ module.exports = function(server, passport, database, renderFile) {
 
 		var functionPreProcess = function() {
 			
-			if (!req.body.strSetID || !req.body.htmlFrontcard || !req.body.htmlBackcard) {
+			if (!req.body.strSetId || !req.body.htmlFrontcard || !req.body.htmlBackcard) {
 				functionError(req, res, 'Error: Missing Information');
 				return;
 			}
 
-			if (!req.body.strSetID.startsWith('set') || req.body.strSetID.length < 4) {
+			if (req.body.strSetId.length < 1) {
 				functionError(req, res, 'Error: Invalid set');
 				return;
 			}
@@ -90,10 +83,10 @@ module.exports = function(server, passport, database, renderFile) {
 			database.all(`
 				SELECT sets.id FROM sets
 				JOIN users on (users.id = sets.userid)
-				WHERE users.name = :strName and sets.id = :strSetID
+				WHERE users.name = :strName and sets.id = :strSetId
 			`, {
 				':strName': req.user.id,
-				':strSetID': req.body.strSetID.substr(3)
+				':strSetId': req.body.strSetId
 			}, function (err, rows) {
 				if (err) {
 					console.log(err);
@@ -110,12 +103,12 @@ module.exports = function(server, passport, database, renderFile) {
 				INSERT INTO flashcards (
 					frontcard, backcard, setid
 				) VALUES (
-					:htmlFrontcard, :htmlBackcard, :strSetID
+					:htmlFrontcard, :htmlBackcard, :strSetId
 				)
 			`, {
 				':htmlFrontcard': req.body.htmlFrontcard,
 				':htmlBackcard': req.body.htmlBackcard,
-				':strSetID': req.body.strSetID.substr(3)
+				':strSetId': req.body.strSetId
 			}, function (err) {
 				if (err) {
 					console.log(err);
@@ -133,23 +126,21 @@ module.exports = function(server, passport, database, renderFile) {
 
 	/* GET FLASHCARD of a SET */
 	server.get('/viewset', isLoggedIn, function(req, res) {
-		var strSetID = req.query.strSetID;
+		var strSetId = req.query.strSetId;
 
-		if (!strSetID || strSetID.length < 4) {
+		if (!strSetId || strSetId.length < 1) {
 			functionError(req, res, 'Error: set id not found or invalid set id');
 			return; 
 		}
-
-		strSetID = strSetID.substr(3);
 
 		database.all(`
 			SELECT flashcards.id, flashcards.frontcard, flashcards.backcard
 			FROM flashcards
 			JOIN sets ON (sets.id = flashcards.setid)
 			JOIN users ON (users.id = sets.userid)
-			WHERE sets.id = :strSetID and users.id = :strUserIdent
+			WHERE sets.id = :strSetId and users.id = :strUserIdent
 		`, {	
-			':strSetID': strSetID,
+			':strSetId': strSetId,
 			':strUserIdent': req.user.id
 		}, function (err, rows) {
 			if (err) {
@@ -162,8 +153,56 @@ module.exports = function(server, passport, database, renderFile) {
 
 	}); // [ END /viewset]
 
+	/* REMOVE a CARD */
+	server.get('/removefc', isLoggedIn, function(req, res) {
+		if (!req.query.strSetId || !req.query.strFcId ) {
+			functionError(req, re, 'Error: setid and cardid not found');
+			return; 
+		}
+
+		database.run(`
+			DELETE FROM flashcards
+			WHERE flashcards.id = :strFcId and flashcards.setid = :strSetId 
+		`, {
+			':strFcId': req.query.strFcId,
+			':strSetId': req.query.strSetId
+		}, function(err) {
+			if (err) {
+				functionError(req, res, 'Error: unable to get your request right now!');
+				return; 
+			}
+			functionSuccess(req, res, 'Successful remove an entry!', 'text/plain');
+		});
+	}); 
+
+	/* UPDATE FLASHCARD */
+	server.post('/updatefc', isLoggedIn, function(req, res) {
+
+		database.run(`
+			UPDATE flashcards
+			SET frontcard = :htmlFrontcard, 
+				backcard = :htmlBackcard
+			WHERE
+				id = :strFcId 
+		`, {
+			':htmlFrontcard': req.body.htmlFrontcard,
+			':htmlBackcard': req.body.htmlBackcard,
+			':strFcId': req.body.strFcId
+		}, function(err) {
+			if (err) {
+				console.log(err);
+				functionError(req, res, 'Error: unable to get your request right now!');
+				return; 	
+			}
+			
+			functionSuccess(req, res, 'Successful update an entry!', 'text/plain');
+		});
+	});
+
+	
+
 	/** RES FUNCTIONS */
-	function functionSendList(req, res) {
+	function functionSendListSet(req, res) {
 		database.all(`
 			SELECT sets.id, sets.title, sets.discription  FROM sets
 			JOIN users ON (sets.userid = users.id)
@@ -172,13 +211,11 @@ module.exports = function(server, passport, database, renderFile) {
 			':intUserIdent': req.user.id
 		}, function(err, rows) {
 			if (err !== null) {
-				console.log('--- Error when get sets');
 				console.log(err);
 				functionError(req, res, '');
 				return;
 			} 
 
-			console.log(rows);
 			functionSuccess(req, res, JSON.stringify(rows, null, 4), 'application/json');
 		});
 	}

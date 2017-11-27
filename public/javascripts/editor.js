@@ -1,6 +1,6 @@
 
 /**
- * CONTROL TOOLBAR
+ *  TOOLBAR
  */
 
 jQuery('#idToolbar').on('click', 'button', function() {
@@ -16,4 +16,7 @@ jQuery('#idInsertCodeBack').on('click', function() {
     jQuery('<br><pre><code><br><br></code></pre><br>').appendTo('#idEditBoxBackCard');
 });
 
-
+jQuery('#idDivDisplayFlashcards').on('click', 'div.grp-toolbar button', function() {
+    var strCmd = jQuery(this).val();
+    document.execCommand(strCmd, null, null);
+});
