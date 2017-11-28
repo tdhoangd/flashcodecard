@@ -2,7 +2,11 @@ var client = {
     sets: [],
     selectedSetTitle: null,
     selectedSetId: null,
-    flashcards: []
+    flashcards: [],
+    quizStatus: {
+        'side': null,
+        'cardNo': 0
+    }
 };
 
 /**
@@ -91,7 +95,6 @@ jQuery('#id-list-set').on('click', function () {
 
 });
 
-
 /**
  * update selected set
  */
@@ -106,8 +109,6 @@ jQuery('#idListSet').on('click', 'li > a', function () {
     jQuery('#idDivContainerList').addClass("hidden");
 
 });
-
-/* TODO */
 
 /**
  * create new flashcard
@@ -167,7 +168,7 @@ jQuery('#idBtnView').on('click', function () {
 
     jQuery.ajax({
         type: 'GET',
-        url: '/viewset?strSetId=' + strSetId,
+        url: '/getfc?strSetId=' + strSetId,
         success: function (objectData) {
             functionListFlashcards(objectData);
         }
@@ -179,13 +180,24 @@ jQuery('#idBtnView').on('click', function () {
  */
 jQuery('#idBtnQuiz').on('click', function () {
     //  TODO
+    client.flashcards = [];
+    var strSetId = jQuery('#idSelectedSet').attr('data-setid');
+    
+    if (!strSetId || strSetId.length < 1) {
+        alert('select a set first');
+        return;
+    }
+
+    jQuery.ajax({
+        type: 'GET',
+        url: '/getfc?strSetId=' + strSetId,
+        success: function (objectData) {
+            // TODO start quiz
+            functionInitQuiz(objectData);
+            console.log(JSON.stringify(objectData));
+        }
+    });
 });
-
-// EXAMPLE 
-// jQuery('#bodyTable').on('click', 'tr td:nth-child(2) > button', function () {
-//     alert(jQuery(this).attr('data-id'));
-// });
-
 
 
 /******************************
@@ -299,7 +311,6 @@ jQuery('#idBodyListFlashcards').on('click', 'div.grp-submit div:nth-child(2) but
     functionOnOffEdittable(fcContainer, false);
 });
 
-
 // remove card
 jQuery('#idBodyListFlashcards').on('dblclick', 'div.grp-edit button:nth-child(2)', function () {
     var fcContainer = jQuery(this).closest('.fc-container'); 
@@ -319,11 +330,86 @@ jQuery('#idBodyListFlashcards').on('dblclick', 'div.grp-edit button:nth-child(2)
     });
 });
 
+/******************************
+ ************ QUIZ ************
+ */
 
+function functionInitQuiz(objectData) {    
+    jQuery('#idQuizContainer').removeClass('hidden'); 
+    var btnFlip = jQuery('#idQuizFlip');
+    var btnNext = jQuery('#idQuizNext');
+    var progress = jQuery('#idProgress');
+    var displayScreen = jQuery('#idQuizScreen');
 
+    // init
+    client.flashcards = functionShuffle(objectData);
+    client.quizStatus.side = 'front';
+    client.quizStatus.cardNo = 0;
+    
+    btnFlip.prop('disabled', false);
+    btnNext.val('next').html('Next');
+    progress.html('');
 
+    // no cards
+    if (objectData.length < 1) {
+        btnFlip.prop('disabled', true);
+        btnNext.val('done').html('Done');
+        displayScreen.empty().html('There is no card in selected set!');
+        return;
+    }
 
+    // # cards > 0
+    functionQuizDisplay(0, 'front');
 
+}
+
+function functionQuizDisplay(cardNo, side) {
+    var btnFlip = jQuery('#idQuizFlip');
+    var btnNext = jQuery('#idQuizNext');
+    var progress = jQuery('#idProgress');
+    var screen = jQuery('#idQuizScreen').empty();
+    
+    if (cardNo >= client.flashcards.length) {
+        window.location.replace('/main');        
+        return;
+    }
+
+    client.quizStatus.side = side;
+    client.quizStatus.cardNo = cardNo; 
+    if (side === 'back') {
+        screen.html(client.flashcards[cardNo].backcard);
+    } else {
+        screen.html(client.flashcards[cardNo].frontcard);
+    }
+    
+    var num = cardNo + 1; 
+    var strProgress = side + '  ' +  num + '/' + client.flashcards.length;
+    progress.empty().html(strProgress);
+
+    if (cardNo === client.flashcards.length - 1) {
+        btnNext.val('done').html('Done');        
+    }
+}
+
+jQuery('#idQuizNext').on('click', function() {
+    var strVal = jQuery(this).val();
+
+    if (strVal === 'done') {
+        jQuery('#idQuizContainer').addClass('hidden');         
+        window.location.replace('/main');        
+        return;
+    }
+
+    functionQuizDisplay(client.quizStatus.cardNo + 1, 'front');
+});
+
+jQuery('#idQuizFlip').on('click', function() {
+    if (client.quizStatus.side === 'front') {
+        functionQuizDisplay(client.quizStatus.cardNo, 'back');
+    } else {
+        functionQuizDisplay(client.quizStatus.cardNo, 'front');        
+    }
+});
 
 
 
@@ -334,14 +420,14 @@ jQuery('#idBodyListFlashcards').on('dblclick', 'div.grp-edit button:nth-child(2)
 
 
 /***************************
- ******* FUNCTIONS *********
+ ******* FUNCTIONS  *********
  */
 
 function functionHiddenAll() {
     jQuery('#idDivContainerList').addClass('hidden');
     jQuery('#idBoxCreateSet').addClass('hidden');
     jQuery('#idBoxCreateFlashcard').addClass('hidden');
-    jQuery('#idDivDisplayFlashcards').addClass('hidden');
+    jQuery('#idFlashcardsContainer').addClass('hidden');
     // jQuery('#').addClass('hidden');
     // jQuery('#').addClass('hidden');
     // jQuery('#').addClass('hidden');
@@ -386,7 +472,7 @@ function functionListSets(objectData) {
  */
 function functionListFlashcards(objectData) {
     client.flashcards = objectData;
-    functionVisible('idDivDisplayFlashcards');
+    functionVisible('idFlashcardsContainer');
     jQuery('#idEditGroup button:nth-child(1)').prop('disabled', false);
     jQuery('#idEditGroup button:nth-child(2)').prop('disabled', true);
 
@@ -431,7 +517,22 @@ function functionHTMLToolbar() {
             .append('<span><strong>U</strong></span>'))
         .append(jQuery('<button type="button" class="btn btn-default" value="indent"></div>')
             .append('<span class="glyphicon glyphicon-indent-left"></span>'))
+        .append(jQuery('<button type="button" class="btn btn-default" value="codeBlockFront"></div>')
+            .append('<span class="glyphicon glyphicon-console">front</span>'))
+        .append(jQuery('<button type="button" class="btn btn-default" value="codeBlockBack"></div>')
+            .append('<span class="glyphicon glyphicon-console">back</span>'))
         ;
 
     return innerOne;
+}
+
+function functionShuffle(arr) {
+    var j, temp; 
+    for (var i = arr.length - 1; i > 0; i--) {
+        j = Math.floor(Math.random() * i);
+        temp = arr[i]; 
+        arr[i] = arr[j];
+        arr[j] = temp; 
+    }
+    return arr;
 }

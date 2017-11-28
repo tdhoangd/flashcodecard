@@ -17,7 +17,7 @@
 
 <body>
 
-	<nav class="nav navbar-inverse navbar-fixed-top">
+	<nav class="nav navbar-custom navbar-fixed-top">
 		<div class="container">
 			<div class="navbar-header">
 				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -79,89 +79,6 @@
 			</div>
 		</div>
 	</nav>
-
-	<div id="idDivContainerList" class="container hidden">
-		<div class="row">
-			<div class="col-sm-4">
-				<div class="panel panel-default">
-					<div class="panel-heading medium-text">My sets</div>
-					<div class="panel-body">
-						<ul id="idListSet" class="nav">
-						</ul>
-					</div>
-				</div>
-			</div>
-			<!-- <div class="col-sm-8">
-				
-			</div> -->
-		</div>
-	</div>
-
-	<!-- display flashcards  -->
-	<div id="idDivDisplayFlashcards" class="container hidden">
-		<div class="panel panel-default">
-			<div class="panel-heading">
-				<table style="width: 100%; border: 1px; padding: 5px; margin: 0;">
-					<thead>
-						<tr>
-							<td align="left">
-								<span class="pull-left">MY CARDS</span>
-							</td>
-							<td align="right">
-								<div id="idEditGroup" class=" pull-right" role="group">
-									<button style="float: left;" type="button" class="btn btn-default" data="editable">Edit</button>
-									<button style="float: right;" type="button" class="btn btn-default" data="done">Done</button>
-								</div>
-							</td>
-						</tr>
-					</thead>
-				</table>
-			</div>
-			<div id="idBodyListFlashcards" class="panel-body">
-				<!-- cards go here -->
-			</div>
-		</div>
-	</div>
-
-	<!-- test -->
-	<!-- <table border="1" class="hidden">
-		<thead>
-			<tr>
-				<th>#</th>
-				<th>btn</th>
-			</tr>
-		</thead>
-		<tbody id="bodyTable">
-			<tr>
-				<td>1</td>
-				<td>
-					<button type="button" class="" data-id="btn1">
-						edit me
-					</button>
-				</td>
-			</tr>
-			<tr>
-				<td>2</td>
-				<td>
-					<button type="button" class="" data-id="btn2">
-						edit me
-					</button>
-				</td>
-			</tr>
-			<tr>
-				<td>3</td>
-				<td>
-					<button type="button" class="" data-id="btn3">
-						edit me
-					</button>
-				</td>
-			</tr>
-		</tbody>
-	</table> -->
-
-	<!-- end test -->
-
-
 
 	<div id="idBoxCreateSet" class="hidden box-create-new">
 		<hr>
@@ -280,7 +197,90 @@
 		</div>
 	</div>
 
+	<!-- display sets -->
+	<div id="idDivContainerList" class="container hidden">
+		<div class="row">
+			<div class="col-sm-4">
+				<div class="panel panel-default">
+					<div class="panel-heading medium-text">My sets</div>
+					<div class="panel-body">
+						<ul id="idListSet" class="nav">
+						</ul>
+					</div>
+				</div>
+			</div>
+			<!-- <div class="col-sm-8">
+						
+					</div> -->
+		</div>
+	</div>
 
+	<!-- display flashcards  -->
+	<div id="idFlashcardsContainer" class="container hidden">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<table style="width: 100%; border: 1px; padding: 5px; margin: 0;">
+					<thead>
+						<tr>
+							<td align="left">
+								<span class="pull-left">MY CARDS</span>
+							</td>
+							<td align="right">
+								<div id="idEditGroup" class=" pull-right" role="group">
+									<button style="float: left;" type="button" class="btn btn-default" data="editable">Edit</button>
+									<button style="float: right;" type="button" class="btn btn-default" data="done">Done</button>
+								</div>
+							</td>
+						</tr>
+					</thead>
+				</table>
+			</div>
+			<div id="idBodyListFlashcards" class="panel-body">
+				<!-- cards go here -->
+			</div>
+		</div>
+	</div>
+
+	<!-- quiz -->
+	<div id="idQuizContainer" class="quiz-container container hidden">
+		<div class="qc-item-1 wrapper panel panel-default">
+			<div class="wrapper-item-1 panel-heading">
+				<table style="width: 100%; border: 1px; padding: 5px; margin: 0;">
+					<thead>
+						<tr>
+							<td align="left">
+								<span class="pull-left">QUIZ</span>
+							</td>
+							<td align="right">
+								<div id="idProgress" class="pull-right" role="group">
+									
+								</div>
+							</td>
+						</tr>
+					</thead>
+				</table>
+			</div>
+			<div class="wrapper-item-2 panel-body">
+				<div style=" height: 100%;" class="row">
+					<div id="idQuizScreen" style=" height: 100%" class="quiz-screen col-md-8 col-md-offset-2">
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="qc-item-2 panel panel-default ">
+			<div class=" panel-footer panel-footer-custom">
+				<div class="quiz-btn-grp row">
+					<div class="col-xs-6">
+						<button id="idQuizFlip" class="btn btn-block btn-primary" value="flip">Flip</button>
+					</div>
+					<div class="col-xs-6">
+						<button id="idQuizNext" class="btn btn-block btn-primary" value="next">Next</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
 
 	<script type="text/javascript" src="/javascripts/main.js"></script>
 	<script type="text/javascript" src="/javascripts/editor.js"></script>

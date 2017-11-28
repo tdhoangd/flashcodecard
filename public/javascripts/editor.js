@@ -16,7 +16,19 @@ jQuery('#idInsertCodeBack').on('click', function() {
     jQuery('<br><pre><code><br><br></code></pre><br>').appendTo('#idEditBoxBackCard');
 });
 
-jQuery('#idDivDisplayFlashcards').on('click', 'div.grp-toolbar button', function() {
+jQuery('#idFlashcardsContainer').on('click', 'div.grp-toolbar button', function() {
     var strCmd = jQuery(this).val();
-    document.execCommand(strCmd, null, null);
+    var fcContainer = jQuery(this).closest('.fc-container');
+
+    switch(strCmd) {
+        case 'codeBlockFront': 
+            jQuery('<br><pre><code><br><br></code></pre><br>').appendTo(fcContainer.find('div.fc-front'));
+            break;
+        case 'codeBlockBack':
+            jQuery('<br><pre><code><br><br></code></pre><br>').appendTo(fcContainer.find('div.fc-back'));
+            break;
+        default: 
+            document.execCommand(strCmd, null, null);
+            break;
+    }
 });

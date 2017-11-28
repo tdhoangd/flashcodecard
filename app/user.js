@@ -125,7 +125,7 @@ module.exports = function(server, passport, database, renderFile) {
 	}); // [ END /create-new-flashcard]
 
 	/* GET FLASHCARD of a SET */
-	server.get('/viewset', isLoggedIn, function(req, res) {
+	server.get('/getfc', isLoggedIn, function(req, res) {
 		var strSetId = req.query.strSetId;
 
 		if (!strSetId || strSetId.length < 1) {
@@ -151,7 +151,7 @@ module.exports = function(server, passport, database, renderFile) {
 			functionSuccess(req, res, JSON.stringify(rows, null, 4), 'application/json');	
 		});
 
-	}); // [ END /viewset]
+	}); // [ END /getfc]
 
 	/* REMOVE a CARD */
 	server.get('/removefc', isLoggedIn, function(req, res) {
@@ -199,7 +199,6 @@ module.exports = function(server, passport, database, renderFile) {
 		});
 	});
 
-	
 
 	/** RES FUNCTIONS */
 	function functionSendListSet(req, res) {

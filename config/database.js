@@ -21,7 +21,6 @@ module.exports = function(database) {
 				title TEXT NOT NULL,
 				discription TEXT,
 				userid,
-				UNIQUE(title),
 				FOREIGN KEY(userid) REFERENCES users(id)
 			)
 		`);
