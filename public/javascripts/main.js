@@ -42,9 +42,10 @@ jQuery('#idTabCreateFlashcard').on('click', function () {
     var x = jQuery('#idBoxCreateFlashcard');
     if (x.hasClass("hidden")) {
         functionVisible('idBoxCreateFlashcard');
-        // x.removeClass("hidden");
         jQuery('#idEditBoxFrontCard').empty();
         jQuery('#idEditBoxBackCard').empty();
+
+        jQuery('#idToolbar').empty().html(HTMLToolbar(0));
     } else {
         x.addClass("hidden");
     }
@@ -67,7 +68,7 @@ jQuery('#idSubmitNewSet').on('click', function () {
             },
             success: function (objectData, textStatus) {
                 jQuery('#idBoxCreateSet').addClass("hidden");
-                functionListSets(objectData);
+                displaySets(objectData);
             },
             error: function (xhr, status, error) {
                 console.log(xhr);
@@ -89,7 +90,7 @@ jQuery('#id-list-set').on('click', function () {
         type: 'GET',
         url: '/list',
         success: function (objectData, textStatus, jqXHR) {
-            functionListSets(objectData);
+            displaySets(objectData);
         }
     });
 
@@ -170,7 +171,7 @@ jQuery('#idBtnView').on('click', function () {
         type: 'GET',
         url: '/getfc?strSetId=' + strSetId,
         success: function (objectData) {
-            functionListFlashcards(objectData);
+            displayFlashcards(objectData);
         }
     });
 });
@@ -182,7 +183,7 @@ jQuery('#idBtnQuiz').on('click', function () {
     //  TODO
     client.flashcards = [];
     var strSetId = jQuery('#idSelectedSet').attr('data-setid');
-    
+
     if (!strSetId || strSetId.length < 1) {
         alert('select a set first');
         return;
@@ -193,7 +194,7 @@ jQuery('#idBtnQuiz').on('click', function () {
         url: '/getfc?strSetId=' + strSetId,
         success: function (objectData) {
             // TODO start quiz
-            functionInitQuiz(objectData);
+            quizInit(objectData);
             console.log(JSON.stringify(objectData));
         }
     });
@@ -248,11 +249,11 @@ jQuery('#idEditGroup').on('click', 'button', function () {
 // edit card
 jQuery('#idBodyListFlashcards').on('click', 'div.grp-edit button:nth-child(1)', function () {
     var fcContainer = jQuery(this).closest('.fc-container');
-    functionOnOffEdittable(fcContainer, true);
+    fcOnOffEdittable(fcContainer, true);
 });
 
 
-// edit card --> click update button
+// submit: edit card --> click update button
 jQuery('#idBodyListFlashcards').on('click', 'div.grp-submit div:nth-child(1) button', function () {
     var fcContainer = jQuery(this).closest('.fc-container');
 
@@ -271,7 +272,7 @@ jQuery('#idBodyListFlashcards').on('click', 'div.grp-submit div:nth-child(1) but
             'strSetId': strSetId
         },
         success: function (objectData) {
-            functionOnOffEdittable(fcContainer, false);
+            fcOnOffEdittable(fcContainer, false);
         }
     });
 
@@ -279,10 +280,10 @@ jQuery('#idBodyListFlashcards').on('click', 'div.grp-submit div:nth-child(1) but
 });
 
 // turn on/off editable of a card
-function functionOnOffEdittable(fcContainer, isOn) {
+function fcOnOffEdittable(fcContainer, isOn) {
     if (isOn) {
         // disabled edit/pencil button    
-        fcContainer.find('.grp-edit button:nth-child(1)').prop('disabled', true);    
+        fcContainer.find('.grp-edit button:nth-child(1)').prop('disabled', true);
 
         fcContainer
             .append(jQuery('<div class="panel-footer"></div>')
@@ -294,9 +295,9 @@ function functionOnOffEdittable(fcContainer, isOn) {
             jQuery(this).addClass('editbox').attr('contenteditable', 'true');
         });
 
-        fcContainer.find('.panel-heading').append(functionHTMLToolbar());
+        fcContainer.find('.panel-heading').append(HTMLToolbar(1));
     } else {
-        fcContainer.find('.grp-edit button:nth-child(1)').prop('disabled', false);    
+        fcContainer.find('.grp-edit button:nth-child(1)').prop('disabled', false);
         fcContainer.find('.panel-footer').remove();
         fcContainer.find('.grp-toolbar').remove();
         fcContainer.find('.fc-front').removeClass('editbox').attr('contenteditable', 'false');;
@@ -308,44 +309,48 @@ function functionOnOffEdittable(fcContainer, isOn) {
 // edit card --> click cancel button
 jQuery('#idBodyListFlashcards').on('click', 'div.grp-submit div:nth-child(2) button', function () {
     var fcContainer = jQuery(this).closest('.fc-container');
-    functionOnOffEdittable(fcContainer, false);
+    fcOnOffEdittable(fcContainer, false);
 });
 
-// remove card
+// button remove card
 jQuery('#idBodyListFlashcards').on('dblclick', 'div.grp-edit button:nth-child(2)', function () {
-    var fcContainer = jQuery(this).closest('.fc-container'); 
+    var fcContainer = jQuery(this).closest('.fc-container');
     var strFcId = fcContainer.attr('data-cardid');
 
     jQuery.ajax({
         type: 'GET',
         url: '/removefc?strSetId=' + client.selectedSetId + '&strFcId=' + strFcId,
-        success: function(objectData) {
+        success: function (objectData) {
             console.log(objectData);
             fcContainer.remove();
-        }, 
+        },
         error: function (xhr, status, error) {
-            console.log(xhr);       
+            console.log(xhr);
             alert('Unable to remove card now. Try again later');
         }
     });
 });
 
+
+
+
 /******************************
  ************ QUIZ ************
  */
 
-function functionInitQuiz(objectData) {    
-    jQuery('#idQuizContainer').removeClass('hidden'); 
+function quizInit(objectData) {
+    functionVisible('idQuizContainer');
+    // jQuery('#idQuizContainer').removeClass('hidden'); 
     var btnFlip = jQuery('#idQuizFlip');
     var btnNext = jQuery('#idQuizNext');
     var progress = jQuery('#idProgress');
     var displayScreen = jQuery('#idQuizScreen');
 
     // init
-    client.flashcards = functionShuffle(objectData);
+    client.flashcards = shuffleArr(objectData);
     client.quizStatus.side = 'front';
     client.quizStatus.cardNo = 0;
-    
+
     btnFlip.prop('disabled', false);
     btnNext.val('next').html('Next');
     progress.html('');
@@ -359,83 +364,83 @@ function functionInitQuiz(objectData) {
     }
 
     // # cards > 0
-    functionQuizDisplay(0, 'front');
-
+    quizDisplayCard(0, 'front');
 }
 
-function functionQuizDisplay(cardNo, side) {
+function quizDisplayCard(cardNo, side) {
     var btnFlip = jQuery('#idQuizFlip');
     var btnNext = jQuery('#idQuizNext');
     var progress = jQuery('#idProgress');
     var screen = jQuery('#idQuizScreen').empty();
-    
+
     if (cardNo >= client.flashcards.length) {
-        window.location.replace('/main');        
+        window.location.replace('/main');
         return;
     }
 
     client.quizStatus.side = side;
-    client.quizStatus.cardNo = cardNo; 
+    client.quizStatus.cardNo = cardNo;
     if (side === 'back') {
         screen.html(client.flashcards[cardNo].backcard);
     } else {
         screen.html(client.flashcards[cardNo].frontcard);
     }
-    
-    var num = cardNo + 1; 
-    var strProgress = side + '  ' +  num + '/' + client.flashcards.length;
+
+    var num = cardNo + 1;
+    var strProgress = side + '  ' + num + '/' + client.flashcards.length;
     progress.empty().html(strProgress);
 
     if (cardNo === client.flashcards.length - 1) {
-        btnNext.val('done').html('Done');        
+        btnNext.val('done').html('Done');
     }
+
+    jQuery(document).ready(function () {
+        jQuery('pre code').each(function (i, block) {
+            hljs.highlightBlock(block);
+        });
+    });
 }
 
-jQuery('#idQuizNext').on('click', function() {
+jQuery('#idQuizNext').on('click', function () {
     var strVal = jQuery(this).val();
 
     if (strVal === 'done') {
-        jQuery('#idQuizContainer').addClass('hidden');         
-        window.location.replace('/main');        
+        jQuery('#idQuizContainer').addClass('hidden');
+        window.location.replace('/main');
         return;
     }
 
-    functionQuizDisplay(client.quizStatus.cardNo + 1, 'front');
+    quizDisplayCard(client.quizStatus.cardNo + 1, 'front');
 });
 
-jQuery('#idQuizFlip').on('click', function() {
+jQuery('#idQuizFlip').on('click', function () {
     if (client.quizStatus.side === 'front') {
-        functionQuizDisplay(client.quizStatus.cardNo, 'back');
+        quizDisplayCard(client.quizStatus.cardNo, 'back');
     } else {
-        functionQuizDisplay(client.quizStatus.cardNo, 'front');        
+        quizDisplayCard(client.quizStatus.cardNo, 'front');
     }
 });
-
-
-
-
-
 
 
 
 
 /***************************
- ******* FUNCTIONS  *********
+ ***************************
  */
 
-function functionHiddenAll() {
+function hideAll() {
     jQuery('#idDivContainerList').addClass('hidden');
     jQuery('#idBoxCreateSet').addClass('hidden');
     jQuery('#idBoxCreateFlashcard').addClass('hidden');
     jQuery('#idFlashcardsContainer').addClass('hidden');
-    // jQuery('#').addClass('hidden');
+    jQuery('#idQuizContainer').addClass('hidden');
     // jQuery('#').addClass('hidden');
     // jQuery('#').addClass('hidden');
     // jQuery('#').addClass('hidden');
 }
 
 function functionVisible() {
-    functionHiddenAll();
+    hideAll();
     for (var i = 0; i < arguments.length; i++) {
         jQuery('#' + arguments[i]).removeClass('hidden');
     }
@@ -444,7 +449,7 @@ function functionVisible() {
 /**
  * update and display list of all sets
  */
-function functionListSets(objectData) {
+function displaySets(objectData) {
     // console.log(JSON.stringify(objectData));  
     jQuery('#idDivContainerList').removeClass("hidden");
 
@@ -470,7 +475,7 @@ function functionListSets(objectData) {
 /**
  * display all flashcards of a set
  */
-function functionListFlashcards(objectData) {
+function displayFlashcards(objectData) {
     client.flashcards = objectData;
     functionVisible('idFlashcardsContainer');
     jQuery('#idEditGroup button:nth-child(1)').prop('disabled', false);
@@ -506,9 +511,15 @@ function functionListFlashcards(objectData) {
     }
 }
 
-function functionHTMLToolbar() {
-    var innerOne = jQuery('<div class="grp-toolbar btn-group" role="group"></div>');
-    innerOne
+// 0: create new 
+// 1: edit 
+function HTMLToolbar(type) {
+    var htmlToolbar = jQuery('<div class="grp-toolbar btn-group" role="group"></div>');
+    htmlToolbar
+        .append(jQuery('<button type="button" class="btn btn-default" value="undo"></div>')
+            .append('<span class="glyphicon glyphicon-arrow-left"></span>'))
+        .append(jQuery('<button type="button" class="btn btn-default" value="redo"></div>')
+            .append('<span class="glyphicon glyphicon-arrow-right"></span>'))
         .append(jQuery('<button type="button" class="btn btn-default" value="bold"></div>')
             .append('<span class="glyphicon glyphicon-bold"></span>'))
         .append(jQuery('<button type="button" class="btn btn-default" value="italic"></div>')
@@ -517,22 +528,31 @@ function functionHTMLToolbar() {
             .append('<span><strong>U</strong></span>'))
         .append(jQuery('<button type="button" class="btn btn-default" value="indent"></div>')
             .append('<span class="glyphicon glyphicon-indent-left"></span>'))
-        .append(jQuery('<button type="button" class="btn btn-default" value="codeBlockFront"></div>')
-            .append('<span class="glyphicon glyphicon-console">front</span>'))
-        .append(jQuery('<button type="button" class="btn btn-default" value="codeBlockBack"></div>')
-            .append('<span class="glyphicon glyphicon-console">back</span>'))
-        ;
+        .append(jQuery('<button type="button" class="btn btn-default" value="outdent"></div>')
+            .append('<span class="glyphicon glyphicon-indent-right"></span>'))
+        .append(jQuery('<button type="button" class="btn btn-default" value="insertUnorderedList"></div>')
+            .append('<span class="glyphicon glyphicon-list"></span>'))
 
-    return innerOne;
+    ;
+
+    if (type === 1) {
+        htmlToolbar
+            .append(jQuery('<button type="button" class="btn btn-default" value="codeBlockFront"></div>')
+                .append('<span class="glyphicon glyphicon-console">front</span>'))
+            .append(jQuery('<button type="button" class="btn btn-default" value="codeBlockBack"></div>')
+                .append('<span class="glyphicon glyphicon-console">back</span>'));
+    }
+
+    return htmlToolbar;
 }
 
-function functionShuffle(arr) {
-    var j, temp; 
+function shuffleArr(arr) {
+    var j, temp;
     for (var i = arr.length - 1; i > 0; i--) {
         j = Math.floor(Math.random() * i);
-        temp = arr[i]; 
+        temp = arr[i];
         arr[i] = arr[j];
-        arr[j] = temp; 
+        arr[j] = temp;
     }
     return arr;
 }

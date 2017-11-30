@@ -3,11 +3,6 @@
  *  TOOLBAR
  */
 
-jQuery('#idToolbar').on('click', 'button', function() {
-    var strCmd = jQuery('#' + this.id).val();
-    document.execCommand(strCmd, null, null);
-});
-
 jQuery('#idInsertCodeFront').on('click', function() {
     jQuery('<br><pre><code><br><br></code></pre><br>').appendTo('#idEditBoxFrontCard');
 });
@@ -32,3 +27,10 @@ jQuery('#idFlashcardsContainer').on('click', 'div.grp-toolbar button', function(
             break;
     }
 });
+
+jQuery('#idBoxCreateFlashcard').on('click', 'div.grp-toolbar button', function() {
+    var strCmd = jQuery(this).val();
+    document.execCommand(strCmd, null, null);
+});
+
+

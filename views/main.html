@@ -11,7 +11,9 @@
 	/>
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
 	<link rel="stylesheet" type="text/css" href="/stylesheets/style.css">
-	<!-- <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.12.0/build/styles/default.min.css"> -->
+	
+	<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.12.0/build/styles/default.min.css">
+	<script type="text/javascript" src="/stylesheets/highlight/highlight.pack.js"></script>
 
 </head>
 
@@ -133,20 +135,7 @@
 					<!-- toolbar -->
 					<div class="btn-toolbar" role="toolbar">
 						<div id="idToolbar" class="btn-group" role="group">
-							<button id="idBtnBold" type="button" class="btn btn-default" value="bold" aria-label="...">
-								<span class="glyphicon glyphicon-bold"></span>
-							</button>
-							<button id="idBtnItalic" type="button" class="btn btn-default" value="italic">
-								<span class="glyphicon glyphicon-italic"></span>
-							</button>
-							<button id="idBtnUnderline" type="button" class="btn btn-default" value="underline">
-								<span>
-									<strong>U</strong>
-								</span>
-							</button>
 						</div>
-
-						<!-- <div class="btn-group" role="group" aria-label="...">...</div> -->
 					</div>
 
 					<hr>
@@ -281,6 +270,11 @@
 		</div>
 
 	</div>
+
+	
+	<script>
+		hljs.initHighlightingOnLoad();
+	</script>
 
 	<script type="text/javascript" src="/javascripts/main.js"></script>
 	<script type="text/javascript" src="/javascripts/editor.js"></script>
